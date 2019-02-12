@@ -2,7 +2,7 @@ ESX                = nil
 
 TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 
--- Recover vehicles
+-- Recup des infos vehicles BDD
 ESX.RegisterServerCallback('cartegrise:getVehicles', function(source, cb)
     local _source = source
     local xPlayer = ESX.GetPlayerFromId(_source)
@@ -11,9 +11,13 @@ ESX.RegisterServerCallback('cartegrise:getVehicles', function(source, cb)
     MySQL.Async.fetchAll("SELECT * FROM owned_vehicles WHERE owner=@identifier",{['@identifier'] = xPlayer.getIdentifier()}, function(data) 
         for _,v in pairs(data) do
             local vehicle = json.decode(v.vehicle)
-            table.insert(vehicules, {vehicle = vehicle, state = v.state, idGarage = v.idGarage, plate = v.plate})
+            --console.print('plate:'..v.plate)
+            table.insert(vehicules, {vehicle = vehicle, plate = v.plate})
         end
         cb(vehicules)
     end)
 end)
--- End Recover vehicles
+-- Fin recup
+
+
+--table.insert(vehicules, {vehicle = vehicle, state = v.state, idGarage = v.idGarage, plate = v.plate})

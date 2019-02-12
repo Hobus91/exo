@@ -30,6 +30,7 @@ ESX = nil
 
 Citizen.CreateThread(function()
 	while ESX == nil do
+		print('sharedGrise')
 		TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
 		Citizen.Wait(0)
 	end
@@ -37,51 +38,58 @@ end)
 
 -- End init ESX
 
--- View vehicle listings
+-- Menu visionnage vehicles
 function ListCarteGrise()
-	local elements = {}
-	local playerPed = GetPlayerPed(-1)
-	ESX.TriggerServerCallback('cartegrise:getVehicles', function(vehicles)
+    local elements = {}
+    local playerPed = GetPlayerPed(-1)
+    ESX.TriggerServerCallback('cartegrise:getVehicles', function(vehicles)
 
-		for _,v in pairs(vehicles) do
+        for _,v in pairs(vehicles) do
 
             local hashVehicule = v.vehicle.model
             local vehicleName = GetDisplayNameFromVehicleModel(hashVehicule)
             local labelvehicle
-            if(v.state)then 
-                for _,j in pairs(Config.Garages) do
-                    if(j.Id == v.idGarage) then
-                        labelvehicle = vehicleName..' - ' ..j.Name.. ' - '..v.plate --INFORMATION VEHICULE GARAGE CONSULTATION
-                        break
-                    end
-                end
-            else
-                labelvehicle = vehicleName..': Sorti'
-            end   
-    		-- while (labelvehicle ==nil) do
-    			-- Citizen.Wait(0)
-    		-- end 
+            --if(v.state)then 
+                --for _,j in pairs(Config.Garages) do
+                    --if(v.plate) then
+                        labelvehicle = vehicleName..' - '..v.plate --INFORMATION VEHICULE GARAGE CONSULTATION
+                        --break
+                    --end
+                --end
+            --else
+            --    labelvehicle = vehicleName..': Sorti'
+            --end   
+            -- while (labelvehicle ==nil) do
+                -- Citizen.Wait(0)
+            -- end 
 
-			table.insert(elements, {label =labelvehicle , value = v})
+            table.insert(elements, {label =labelvehicle , value = v})
         end
         
         ESX.UI.Menu.Open(
-		'default', GetCurrentResourceName(), 'carte_grise',
-		{
-			css		 = 'garage',
-			title    = getInfoGarage().Name,
-			align    = 'top-left',
-			elements = elements,
-        },
+           'default', GetCurrentResourceName(), 'carte_grise',
+            {
+                css         = 'garage',
+                title    = 'papiers',
+                align    = 'top-left',
+                elements = elements
+			},
+			
+			function(data, menu)
+				menu.close()
+			end
         
-    )
-end)
+        )
+    end)
+end
 
 Citizen.CreateThread(function()
   while true do
+    --print('whileSucces')
    Wait(0)
-    if IsControlPressed(0, 73) then
+   if IsControlJustReleased(0, Keys['Y']) then
       ListCarteGrise()
+      print('controlSucces')
     end
   end
 end)
@@ -94,3 +102,19 @@ end)
 --AddEventHandler('NB:openMenuGrise', function()
 --	ListCarteGrise()
 --end)
+
+---------------------------------------------------------------------------------------------------------
+
+--NOTE UNBUG--
+
+--Mes print saffichent bien, il manque encore une etape pour laffichage du menu
+--Le dernier print controlSucces ne passe pas (peut-etre)
+--Ajout du lien MYSQL dans le fichier __resource.lua
+
+--Quelque chose manque pour declencher laffichage du menu coter client.lua
+
+--FIN NOTE UNBUG--
+
+
+-- if(j.Id == v.idGarage) then
+--    labelvehicle = vehicleName..' - ' ..j.Name.. ' - '..v.plate --INFORMATION VEHICULE GARAGE CONSULTATION
